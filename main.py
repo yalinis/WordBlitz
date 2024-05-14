@@ -5,24 +5,41 @@ pygame.init()
 pygame.font.init()
 my_font = pygame.font.SysFont('Verdana', 20)
 answer_font = pygame.font.SysFont('Comic Sans', 35)
-save_message = my_font.render("Enter your answer: ", True, (0, 0, 0))
+save_message = my_font.render("Click to type: ", True, (0, 0, 0))
 my_font_big = pygame.font.SysFont('Verdana', 30)
 
 # set up variables for the display
-size = (1200, 670)
+width = 1200
+length = 670
+size = (width, length)
 screen = pygame.display.set_mode(size)
 
 bg = pygame.image.load("background.png")
 
 # text box
-guess_box = pygame.Rect(502, 200, 50, 50)
+guess_box = pygame.Rect(0, 0, 1, 1)
 guess_box_color = (255, 255, 255, 0)
 guess_box_active = False
+
+message_x = (width/2)
 
 # user guess
 guessed_word = ""
 guessed_word = guessed_word.upper()
 guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
+
+if len(guessed_word) == 1:
+    message_x = (width / 2)
+if len(guessed_word) == 2:
+    message_x -= 15
+if len(guessed_word) == 3:
+    message_x -= 15
+if len(guessed_word) == 4:
+    message_x -= 15
+if len(guessed_word) == 5:
+    message_x -= 15
+if len(guessed_word) == 6:
+    message_x -= 15
 
 # word 1: 3 letters
 w1l1 = Box(500, 275, 1)
@@ -66,11 +83,25 @@ while run:
                 guessed_word = guessed_word[0:len(guessed_word) - 1]
                 guessed_word = guessed_word.upper()
                 guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
+                message_x += 15
+
             # otherwise, add the typed letter to the text field
             else:
                 guessed_word += event.unicode
                 guessed_word = guessed_word.upper()
                 guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
+                if len(guessed_word) == 1:
+                    message_x = (width / 2)
+                if len(guessed_word) == 2:
+                    message_x -= 15
+                if len(guessed_word) == 3:
+                    message_x -= 15
+                if len(guessed_word) == 4:
+                    message_x -= 15
+                if len(guessed_word) == 5:
+                    message_x -= 15
+                if len(guessed_word) == 6:
+                    message_x -= 15
 
         if event.type == pygame.MOUSEBUTTONUP:
             # activate text box
@@ -78,7 +109,7 @@ while run:
             guess_box_color = (255, 255, 255, 0)
             guess_box_active = True
             # de-activate the text box
-           # else:
+            # else:
              #   guess_box_color = (0, 0, 0)
               #  guess_box_active = False
 
@@ -112,9 +143,9 @@ while run:
     screen.blit(bg, (0, 0))
 
     # typing
-    screen.blit(save_message, (510, 150))
+    screen.blit(save_message, (520, 150))
     pygame.draw.rect(screen, guess_box_color, guess_box, 3)
-    screen.blit(guessed_word_display, (510, 195))
+    screen.blit(guessed_word_display, (message_x, 195))
 
     # word 1
     screen.blit(w1l1.image, w1l1.rect)
