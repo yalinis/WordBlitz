@@ -1,5 +1,6 @@
 import pygame
 from box import Box
+import random
 
 pygame.init()
 pygame.font.init()
@@ -67,11 +68,38 @@ w4l4 = Box(613, 575, 1)
 w4l5 = Box(688, 575, 1)
 w4l6 = Box(763, 575, 1)
 
+# scrambling word:
+def pick_secret_word():
+    words = []
+    f = open("Words", "r")
+    for w in f:
+        words.append(w.rstrip())
+    r = random.randint(0, len(words) - 1)
+    f.close()
+    random_word = words[r]
+    return random_word.upper()
+
+def create_secret_word_list(secret_word):
+    secret_word_list = []
+    for letter in secret_word:
+        secret_word_list.append(letter)
+    return secret_word_list
+
+def scramble_word(secret_word_list):
+    shuffled_list = secret_word_list.copy()
+    random.shuffle(shuffled_list)
+    return shuffled_list
+
+secret_word = pick_secret_word()
+secret_word_list = create_secret_word_list(secret_word)
+secret_word_list = scramble_word(secret_word_list)
 
 run = True
 # -------- Main Program Loop -----------
 while run:
     # --- Main event loop
+
+
 
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
@@ -101,6 +129,8 @@ while run:
                 if len(guessed_word) == 5:
                     message_x -= 15
                 if len(guessed_word) == 6:
+                    message_x -= 15
+                if len(guessed_word) == 7:
                     message_x -= 15
 
         if event.type == pygame.MOUSEBUTTONUP:
@@ -143,9 +173,14 @@ while run:
     screen.blit(bg, (0, 0))
 
     # typing
-    screen.blit(save_message, (520, 150))
+    screen.blit(save_message, (540, 160))
     pygame.draw.rect(screen, guess_box_color, guess_box, 3)
-    screen.blit(guessed_word_display, (message_x, 195))
+    screen.blit(guessed_word_display, (message_x, 200))
+    blit_position = 500
+    for letter in secret_word_list:
+        x = answer_font.render(letter, True, (0, 0, 0))
+        screen.blit(x, (blit_position, 100))
+        blit_position += 25
 
     # word 1
     screen.blit(w1l1.image, w1l1.rect)
