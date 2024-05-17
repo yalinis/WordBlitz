@@ -29,6 +29,9 @@ guessed_word = ""
 guessed_word = guessed_word.upper()
 guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
 
+round = 1
+word_guessed = False
+
 if len(guessed_word) == 1:
     message_x = (width / 2)
 if len(guessed_word) == 2:
@@ -69,15 +72,40 @@ w4l5 = Box(688, 575, 1)
 w4l6 = Box(763, 575, 1)
 
 # scrambling word:
-def pick_secret_word():
-    words = []
-    f = open("Words", "r")
-    for w in f:
-        words.append(w.rstrip())
-    r = random.randint(0, len(words) - 1)
-    f.close()
-    random_word = words[r]
-    return random_word.upper()
+def pick_secret_word(round):
+    let_3 = []
+    let_4 = []
+    let_5 = []
+    let_6 = []
+    f = open("Words", "r") # opens a file called Words
+    for w in f: # for the words in the file
+        w = w.rstrip()
+        if len(w) == 3:
+            let_3.append(w)
+        if len(w) == 4:
+            let_4.append(w)
+        if len(w) == 5:
+            let_5.append(w)
+        if len(w) == 6:
+            let_6.append(w)
+    if round == 1:
+        r = random.randint(0, len(let_3) - 1)
+        random_word = let_3[r]
+    if round == 2:
+        r = random.randint(0, len(let_4) - 1)
+        random_word = let_4[r]
+    if round == 3:
+        r = random.randint(0, len(let_5) - 1)
+        random_word = let_5[r]
+    if round == 4:
+        r = random.randint(0, len(let_6) - 1)
+        random_word = let_6[r]
+
+
+    f.close() # closes file
+
+    return random_word.upper() # returns chosen word in uppercase
+
 
 def create_secret_word_list(secret_word):
     secret_word_list = []
@@ -90,7 +118,7 @@ def scramble_word(secret_word_list):
     random.shuffle(shuffled_list)
     return shuffled_list
 
-secret_word = pick_secret_word()
+secret_word = pick_secret_word(round)
 secret_word_list = create_secret_word_list(secret_word)
 secret_word_list = scramble_word(secret_word_list)
 
@@ -135,14 +163,10 @@ while run:
 
         if event.type == pygame.MOUSEBUTTONUP:
             # activate text box
-            #if guess_box.collidepoint(event.pos):
             guess_box_color = (255, 255, 255, 0)
             guess_box_active = True
-            # de-activate the text box
-            # else:
-             #   guess_box_color = (0, 0, 0)
-              #  guess_box_active = False
 
+        if word_guessed == True:
             # word 1
             w1l1.uncover_box()
             w1l2.uncover_box()
@@ -176,11 +200,18 @@ while run:
     screen.blit(save_message, (540, 160))
     pygame.draw.rect(screen, guess_box_color, guess_box, 3)
     screen.blit(guessed_word_display, (message_x, 200))
-    blit_position = 500
+    if round == 1:
+        blit_position = 550
+    if round == 2:
+        blit_position = 530
+    if round == 3:
+        blit_position = 510
+    if round == 4:
+        blit_position = 480
     for letter in secret_word_list:
-        x = answer_font.render(letter, True, (0, 0, 0))
-        screen.blit(x, (blit_position, 100))
-        blit_position += 25
+        letter_blit = answer_font.render(letter, True, (0, 0, 0))
+        screen.blit(letter_blit, (blit_position, 75))
+        blit_position += 50
 
     # word 1
     screen.blit(w1l1.image, w1l1.rect)
