@@ -118,16 +118,26 @@ def scramble_word(secret_word_list):
     random.shuffle(shuffled_list)
     return shuffled_list
 
+def check_word(secret_word_list, guessed_word_list):
+    if len(secret_word_list) != len(guessed_word_list):
+        print("length")
+        return False
+
+    for i in range(len(secret_word_list)):
+        if secret_word_list[i] != guessed_word_list[i]:
+            print("letter")
+            return False
+
+    return True
+
 secret_word = pick_secret_word(round)
 secret_word_list = create_secret_word_list(secret_word)
-secret_word_list = scramble_word(secret_word_list)
+scrambled_word = scramble_word(secret_word_list)
 
 run = True
 # -------- Main Program Loop -----------
 while run:
     # --- Main event loop
-
-
 
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
@@ -138,13 +148,15 @@ while run:
             if event.key == 8:
                 guessed_word = guessed_word[0:len(guessed_word) - 1]
                 guessed_word = guessed_word.upper()
+                guessed_word_list = create_secret_word_list(guessed_word)
                 guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
                 message_x += 15
 
             # otherwise, add the typed letter to the text field
-            else:
+            elif event.key != 13:
                 guessed_word += event.unicode
                 guessed_word = guessed_word.upper()
+                guessed_word_list = create_secret_word_list(guessed_word)
                 guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
                 if len(guessed_word) == 1:
                     message_x = (width / 2)
@@ -165,6 +177,17 @@ while run:
             # activate text box
             guess_box_color = (255, 255, 255, 0)
             guess_box_active = True
+
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_RETURN]:
+            checking = check_word(secret_word_list, guessed_word_list)
+            print(secret_word_list)
+            print(guessed_word_list)
+            print(checking)
+            if checking:
+                print("Hello")
+                word_guessed = True
 
         if word_guessed == True:
             # word 1
@@ -208,7 +231,7 @@ while run:
         blit_position = 510
     if round == 4:
         blit_position = 480
-    for letter in secret_word_list:
+    for letter in scrambled_word:
         letter_blit = answer_font.render(letter, True, (0, 0, 0))
         screen.blit(letter_blit, (blit_position, 75))
         blit_position += 50
