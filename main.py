@@ -182,39 +182,39 @@ while run:
 
         if keys[pygame.K_RETURN]:
             checking = check_word(secret_word_list, guessed_word_list)
-            print(secret_word_list)
-            print(guessed_word_list)
-            print(checking)
             if checking:
-                print("Hello")
                 word_guessed = True
 
-        if word_guessed == True:
+        if keys[pygame.K_RETURN] and word_guessed == True:
+            if round == 1:
             # word 1
-            w1l1.uncover_box()
-            w1l2.uncover_box()
-            w1l3.uncover_box()
+                w1l1.uncover_box()
+                w1l2.uncover_box()
+                w1l3.uncover_box()
 
+            if round == 2:
             # word 2
-            w2l1.uncover_box()
-            w2l2.uncover_box()
-            w2l3.uncover_box()
-            w2l4.uncover_box()
+                w2l1.uncover_box()
+                w2l2.uncover_box()
+                w2l3.uncover_box()
+                w2l4.uncover_box()
 
+            if round == 3:
             # word 3
-            w3l1.uncover_box()
-            w3l2.uncover_box()
-            w3l3.uncover_box()
-            w3l4.uncover_box()
-            w3l5.uncover_box()
+                w3l1.uncover_box()
+                w3l2.uncover_box()
+                w3l3.uncover_box()
+                w3l4.uncover_box()
+                w3l5.uncover_box()
 
+            if round == 4:
             # word 4
-            w4l1.uncover_box()
-            w4l2.uncover_box()
-            w4l3.uncover_box()
-            w4l4.uncover_box()
-            w4l5.uncover_box()
-            w4l6.uncover_box()
+                w4l1.uncover_box()
+                w4l2.uncover_box()
+                w4l3.uncover_box()
+                w4l4.uncover_box()
+                w4l5.uncover_box()
+                w4l6.uncover_box()
 
 
     screen.blit(bg, (0, 0))

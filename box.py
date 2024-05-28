@@ -12,8 +12,8 @@ class Box:
 
     def uncover_box(self):
         self.box_type -= 1
-        if self.box_type < 0:
-            self.box_type = 1
+      #  if self.box_type < 0:
+      #      self.box_type = 1
         self.set_image()
 
     def set_image(self):
