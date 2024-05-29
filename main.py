@@ -6,7 +6,10 @@ pygame.init()
 pygame.font.init()
 my_font = pygame.font.SysFont('Verdana', 20)
 answer_font = pygame.font.SysFont('Comic Sans', 35)
+won_font = pygame.font.SysFont('Comic Sans', 50)
 save_message = my_font.render("Click to type: ", True, (0, 0, 0))
+game_over_message = won_font.render("Game Over", True, (0, 0, 0))
+won_message2 = won_font.render("You won!!", True, (0, 0, 0))
 my_font_big = pygame.font.SysFont('Verdana', 30)
 
 # set up variables for the display
@@ -31,6 +34,8 @@ guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
 
 round = 1
 word_guessed = False
+round_over = False
+game_won = False
 
 if len(guessed_word) == 1:
     message_x = (width / 2)
@@ -132,6 +137,7 @@ def check_word(secret_word_list, guessed_word_list):
 
 secret_word = pick_secret_word(round)
 secret_word_list = create_secret_word_list(secret_word)
+print(secret_word_list)
 scrambled_word = scramble_word(secret_word_list)
 
 run = True
@@ -182,6 +188,7 @@ while run:
 
         if keys[pygame.K_RETURN]:
             checking = check_word(secret_word_list, guessed_word_list)
+            print(checking)
             if checking:
                 word_guessed = True
 
@@ -216,51 +223,77 @@ while run:
                 w4l5.uncover_box()
                 w4l6.uncover_box()
 
+            if round < 4:
+                round += 1
+            else:
+                game_won = True
+                print("won")
+            round_over = True
+
+        if keys[pygame.K_RETURN] and word_guessed == True and round_over == True and game_won == False:
+            word_guessed = False
+            round_over = False
+            secret_word = pick_secret_word(round)
+            secret_word_list = create_secret_word_list(secret_word)
+            scrambled_word = scramble_word(secret_word_list)
+            print(secret_word_list)
+
+            guessed_word = guessed_word[0:len(guessed_word) - len(guessed_word)]
+            guessed_word = guessed_word.upper()
+            guessed_word_list = create_secret_word_list(guessed_word)
+            guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
+
 
     screen.blit(bg, (0, 0))
 
-    # typing
-    screen.blit(save_message, (540, 160))
-    pygame.draw.rect(screen, guess_box_color, guess_box, 3)
-    screen.blit(guessed_word_display, (message_x, 200))
-    if round == 1:
-        blit_position = 550
-    if round == 2:
-        blit_position = 530
-    if round == 3:
-        blit_position = 510
-    if round == 4:
-        blit_position = 480
-    for letter in scrambled_word:
-        letter_blit = answer_font.render(letter, True, (0, 0, 0))
-        screen.blit(letter_blit, (blit_position, 75))
-        blit_position += 50
+    # won game
+    if game_won == True:
+        screen.blit(game_over_message, (475, 250))
+        screen.blit(won_message2, (500, 315))
 
-    # word 1
-    screen.blit(w1l1.image, w1l1.rect)
-    screen.blit(w1l2.image, w1l2.rect)
-    screen.blit(w1l3.image, w1l3.rect)
+    else:
+        # typing
+        screen.blit(save_message, (540, 160))
+        pygame.draw.rect(screen, guess_box_color, guess_box, 3)
+        screen.blit(guessed_word_display, (message_x, 200))
+        if round == 1:
+            blit_position = 550
+        if round == 2:
+            blit_position = 530
+        if round == 3:
+            blit_position = 510
+        if round == 4:
+            blit_position = 480
+        for letter in scrambled_word:
+            letter_blit = answer_font.render(letter, True, (0, 0, 0))
+            screen.blit(letter_blit, (blit_position, 75))
+            blit_position += 50
 
-    # word 2
-    screen.blit(w2l1.image, w2l1.rect)
-    screen.blit(w2l2.image, w2l2.rect)
-    screen.blit(w2l3.image, w2l3.rect)
-    screen.blit(w2l4.image, w2l4.rect)
+        # word 1
+        screen.blit(w1l1.image, w1l1.rect)
+        screen.blit(w1l2.image, w1l2.rect)
+        screen.blit(w1l3.image, w1l3.rect)
 
-    # word 3
-    screen.blit(w3l1.image, w3l1.rect)
-    screen.blit(w3l2.image, w3l2.rect)
-    screen.blit(w3l3.image, w3l3.rect)
-    screen.blit(w3l4.image, w3l4.rect)
-    screen.blit(w3l5.image, w3l5.rect)
+        # word 2
+        screen.blit(w2l1.image, w2l1.rect)
+        screen.blit(w2l2.image, w2l2.rect)
+        screen.blit(w2l3.image, w2l3.rect)
+        screen.blit(w2l4.image, w2l4.rect)
 
-    # word 4
-    screen.blit(w4l1.image, w4l1.rect)
-    screen.blit(w4l2.image, w4l2.rect)
-    screen.blit(w4l3.image, w4l3.rect)
-    screen.blit(w4l4.image, w4l4.rect)
-    screen.blit(w4l5.image, w4l5.rect)
-    screen.blit(w4l6.image, w4l6.rect)
+        # word 3
+        screen.blit(w3l1.image, w3l1.rect)
+        screen.blit(w3l2.image, w3l2.rect)
+        screen.blit(w3l3.image, w3l3.rect)
+        screen.blit(w3l4.image, w3l4.rect)
+        screen.blit(w3l5.image, w3l5.rect)
+
+        # word 4
+        screen.blit(w4l1.image, w4l1.rect)
+        screen.blit(w4l2.image, w4l2.rect)
+        screen.blit(w4l3.image, w4l3.rect)
+        screen.blit(w4l4.image, w4l4.rect)
+        screen.blit(w4l5.image, w4l5.rect)
+        screen.blit(w4l6.image, w4l6.rect)
 
     pygame.display.update()
 

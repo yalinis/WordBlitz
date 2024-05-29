@@ -11,9 +11,7 @@ class Box:
         self.rect = pygame.Rect(self.x, self.y, self.image_size[0], self.image_size[1])
 
     def uncover_box(self):
-        self.box_type -= 1
-      #  if self.box_type < 0:
-      #      self.box_type = 1
+        self.box_type = 0
         self.set_image()
 
     def set_image(self):
