@@ -1,5 +1,6 @@
 import pygame
 from box import Box
+from bird import Bird
 import random
 
 pygame.init()
@@ -19,6 +20,7 @@ size = (width, length)
 screen = pygame.display.set_mode(size)
 
 bg = pygame.image.load("background.png")
+bird = Bird(15, 250)
 
 # text box
 guess_box = pygame.Rect(0, 0, 1, 1)
@@ -142,8 +144,14 @@ scrambled_word = scramble_word(secret_word_list)
 
 run = True
 # -------- Main Program Loop -----------
+clock = pygame.time.Clock()
+frame = 0
 while run:
     # --- Main event loop
+
+    clock.tick(60)
+    if frame % 25 == 0:
+        bird.switch_image()
 
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
@@ -244,6 +252,9 @@ while run:
             guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
 
 
+        bird.move_bird()
+
+
     screen.blit(bg, (0, 0))
 
     # won game
@@ -251,11 +262,13 @@ while run:
         screen.blit(game_over_message, (475, 250))
         screen.blit(won_message2, (500, 315))
 
+
     else:
         # typing
         screen.blit(save_message, (540, 160))
         pygame.draw.rect(screen, guess_box_color, guess_box, 3)
         screen.blit(guessed_word_display, (message_x, 200))
+        screen.blit(bird.image, bird.rect)
         if round == 1:
             blit_position = 550
         if round == 2:
@@ -294,6 +307,8 @@ while run:
         screen.blit(w4l4.image, w4l4.rect)
         screen.blit(w4l5.image, w4l5.rect)
         screen.blit(w4l6.image, w4l6.rect)
+
+    frame += 1
 
     pygame.display.update()
 
