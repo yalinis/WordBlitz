@@ -21,14 +21,13 @@ class Bird:
         self.image = pygame.transform.scale(self.image, scale_size)
 
     def move_bird(self):
-        if self.x != 0:
+        if self.x != 1200:
             self.x = self.x + self.delta
             self.rect = pygame.Rect(self.x, self.y, self.image_size[0], self.image_size[1])
-            return False
         else:
-            self.x = 800
-            self.y = random.randint(0, 600)
+            self.x = 0
             return True
+
 
     def switch_image(self):
         image_number = 0

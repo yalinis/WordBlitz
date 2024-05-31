@@ -20,7 +20,9 @@ size = (width, length)
 screen = pygame.display.set_mode(size)
 
 bg = pygame.image.load("background.png")
-bird = Bird(15, 250)
+bird_start_y = 200
+bird_start_x = 100
+bird = Bird(bird_start_x, bird_start_y)
 
 # text box
 guess_box = pygame.Rect(0, 0, 1, 1)
@@ -36,6 +38,7 @@ guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
 
 round = 1
 word_guessed = False
+guessed_word_checker = [ False, False, False, False ]
 round_over = False
 game_won = False
 
@@ -149,9 +152,33 @@ frame = 0
 while run:
     # --- Main event loop
 
+
+ #   print(guessed_word_checker)
     clock.tick(60)
     if frame % 25 == 0:
         bird.switch_image()
+
+    if guessed_word_checker[0] == True:
+        bird.move_bird()
+        print(bird.move_bird)
+        if bird.move_bird() == True:
+            guessed_word_checker[0] == False
+
+    if guessed_word_checker[1] == True:
+        bird.move_bird()
+        if bird.x == 1200:
+            guessed_word_checker[1] == False
+
+    if guessed_word_checker[2] == True:
+        bird.move_bird()
+        if bird.x == 1200:
+            guessed_word_checker[2] == False
+
+
+    if guessed_word_checker[3] == True:
+        bird.move_bird()
+        if bird.x == 1200:
+            guessed_word_checker[3] == False
 
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
@@ -201,6 +228,9 @@ while run:
                 word_guessed = True
 
         if keys[pygame.K_RETURN] and word_guessed == True:
+            bird.move_bird()
+            print("hi")
+            guessed_word_checker[round - 1] = True
             if round == 1:
             # word 1
                 w1l1.uncover_box()
@@ -235,7 +265,6 @@ while run:
                 round += 1
             else:
                 game_won = True
-                print("won")
             round_over = True
 
         if keys[pygame.K_RETURN] and word_guessed == True and round_over == True and game_won == False:
@@ -251,8 +280,6 @@ while run:
             guessed_word_list = create_secret_word_list(guessed_word)
             guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
 
-
-        bird.move_bird()
 
 
     screen.blit(bg, (0, 0))
