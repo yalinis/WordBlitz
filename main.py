@@ -41,6 +41,8 @@ word_guessed = False
 guessed_word_checker = [ False, False, False, False ]
 round_over = False
 game_won = False
+game_over = False
+words_done = 0
 
 if len(guessed_word) == 1:
     message_x = (width / 2)
@@ -130,19 +132,50 @@ def scramble_word(secret_word_list):
 
 def check_word(secret_word_list, guessed_word_list):
     if len(secret_word_list) != len(guessed_word_list):
-        print("length")
         return False
 
     for i in range(len(secret_word_list)):
         if secret_word_list[i] != guessed_word_list[i]:
-            print("letter")
             return False
 
     return True
 
+def unscramble_word(round):
+    if check_word:
+        guessed_word_checker[round - 1] = True
+        if round == 1:
+            # word 1
+            w1l1.uncover_box()
+            w1l2.uncover_box()
+            w1l3.uncover_box()
+
+        if round == 2:
+            # word 2
+            w2l1.uncover_box()
+            w2l2.uncover_box()
+            w2l3.uncover_box()
+            w2l4.uncover_box()
+
+        if round == 3:
+            # word 3
+            w3l1.uncover_box()
+            w3l2.uncover_box()
+            w3l3.uncover_box()
+            w3l4.uncover_box()
+            w3l5.uncover_box()
+
+        if round == 4:
+            # word 4
+            w4l1.uncover_box()
+            w4l2.uncover_box()
+            w4l3.uncover_box()
+            w4l4.uncover_box()
+            w4l5.uncover_box()
+            w4l6.uncover_box()
+
+
 secret_word = pick_secret_word(round)
 secret_word_list = create_secret_word_list(secret_word)
-print(secret_word_list)
 scrambled_word = scramble_word(secret_word_list)
 
 run = True
@@ -152,33 +185,40 @@ frame = 0
 while run:
     # --- Main event loop
 
-
- #   print(guessed_word_checker)
     clock.tick(60)
     if frame % 25 == 0:
         bird.switch_image()
 
     if guessed_word_checker[0] == True:
         bird.move_bird()
-        print(bird.move_bird)
+        print(bird.delta)
         if bird.move_bird() == True:
-            guessed_word_checker[0] == False
+            guessed_word_checker[0] = False
+            words_done += 1
 
     if guessed_word_checker[1] == True:
+        bird.y = 350
+        print(bird.delta)
         bird.move_bird()
         if bird.x == 1200:
-            guessed_word_checker[1] == False
+            guessed_word_checker[1] = False
+            words_done += 1
+
 
     if guessed_word_checker[2] == True:
+        bird.y = 450
         bird.move_bird()
         if bird.x == 1200:
-            guessed_word_checker[2] == False
-
+            guessed_word_checker[2] = False
+            words_done += 1
 
     if guessed_word_checker[3] == True:
+        bird.y = 550
         bird.move_bird()
         if bird.x == 1200:
-            guessed_word_checker[3] == False
+            guessed_word_checker[3] = False
+            words_done += 1
+
 
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
@@ -223,47 +263,23 @@ while run:
 
         if keys[pygame.K_RETURN]:
             checking = check_word(secret_word_list, guessed_word_list)
-            print(checking)
             if checking:
                 word_guessed = True
 
         if keys[pygame.K_RETURN] and word_guessed == True:
             bird.move_bird()
-            print("hi")
-            guessed_word_checker[round - 1] = True
             if round == 1:
-            # word 1
-                w1l1.uncover_box()
-                w1l2.uncover_box()
-                w1l3.uncover_box()
-
+                unscramble1 = unscramble_word(1)
             if round == 2:
-            # word 2
-                w2l1.uncover_box()
-                w2l2.uncover_box()
-                w2l3.uncover_box()
-                w2l4.uncover_box()
-
+                unscramble1 = unscramble_word(2)
             if round == 3:
-            # word 3
-                w3l1.uncover_box()
-                w3l2.uncover_box()
-                w3l3.uncover_box()
-                w3l4.uncover_box()
-                w3l5.uncover_box()
-
+                unscramble1 = unscramble_word(3)
             if round == 4:
-            # word 4
-                w4l1.uncover_box()
-                w4l2.uncover_box()
-                w4l3.uncover_box()
-                w4l4.uncover_box()
-                w4l5.uncover_box()
-                w4l6.uncover_box()
+                unscramble1 = unscramble_word(4)
 
             if round < 4:
                 round += 1
-            else:
+            elif round == 4:
                 game_won = True
             round_over = True
 
@@ -285,7 +301,7 @@ while run:
     screen.blit(bg, (0, 0))
 
     # won game
-    if game_won == True:
+    if words_done == 4:
         screen.blit(game_over_message, (475, 250))
         screen.blit(won_message2, (500, 315))
 
