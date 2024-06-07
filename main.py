@@ -178,6 +178,11 @@ secret_word = pick_secret_word(round)
 secret_word_list = create_secret_word_list(secret_word)
 scrambled_word = scramble_word(secret_word_list)
 
+round1_word = secret_word
+round2_word = ""
+round3_word = ""
+round4_word = ""
+
 run = True
 # -------- Main Program Loop -----------
 clock = pygame.time.Clock()
@@ -191,14 +196,12 @@ while run:
 
     if guessed_word_checker[0] == True:
         bird.move_bird()
-        print(bird.delta)
         if bird.move_bird() == True:
             guessed_word_checker[0] = False
             words_done += 1
 
     if guessed_word_checker[1] == True:
         bird.y = 350
-        print(bird.delta)
         bird.move_bird()
         if bird.x == 1200:
             guessed_word_checker[1] = False
@@ -287,6 +290,12 @@ while run:
             word_guessed = False
             round_over = False
             secret_word = pick_secret_word(round)
+            if round == 2:
+                round2_word = secret_word
+            if round == 3:
+                round3_word = secret_word
+            if round == 4:
+                round4_word = secret_word
             secret_word_list = create_secret_word_list(secret_word)
             scrambled_word = scramble_word(secret_word_list)
             print(secret_word_list)
@@ -324,6 +333,39 @@ while run:
             letter_blit = answer_font.render(letter, True, (0, 0, 0))
             screen.blit(letter_blit, (blit_position, 75))
             blit_position += 50
+
+        if round == 1:
+            blit_position_y = 285
+            blit_position_x = 515
+            for letter in round1_word:
+                word_blit = answer_font.render(letter, True, (0, 0, 0))
+                screen.blit(word_blit, (blit_position_x, blit_position_y))
+                blit_position_x += 75
+
+        elif round <= 2:
+            blit_position_y = 375
+            blit_position_x = 463
+            for letter in round2_word:
+                word_blit = answer_font.render(letter, True, (0, 0, 0))
+                screen.blit(word_blit, (blit_position_x, blit_position_y))
+                blit_position_x += 75
+
+        elif round <= 3:
+            blit_position_y = 475
+            blit_position_x = 425
+            for letter in round3_word:
+                word_blit = answer_font.render(letter, True, (0, 0, 0))
+                screen.blit(word_blit, (blit_position_x, blit_position_y))
+                blit_position_x += 75
+
+        elif round <= 4:
+            blit_position_y = 575
+            blit_position_x = 388
+            for letter in round4_word:
+                word_blit = answer_font.render(letter, True, (0, 0, 0))
+                screen.blit(word_blit, (blit_position_x, blit_position_y))
+                blit_position_x += 75
+
 
         # word 1
         screen.blit(w1l1.image, w1l1.rect)
