@@ -39,9 +39,11 @@ guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
 round = 1
 word_guessed = False
 guessed_word_checker = [ False, False, False, False ]
+words_displayed = [ False, False, False, False]
 round_over = False
 game_won = False
 game_over = False
+touched = False
 words_done = 0
 
 if len(guessed_word) == 1:
@@ -223,6 +225,11 @@ while run:
             words_done += 1
 
 
+    if bird.rect.colliderect(w1l1.rect):
+        touched = True
+        print(touched)
+
+
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
             run = False
@@ -269,6 +276,7 @@ while run:
             if checking:
                 word_guessed = True
 
+
         if keys[pygame.K_RETURN] and word_guessed == True:
             bird.move_bird()
             if round == 1:
@@ -280,31 +288,31 @@ while run:
             if round == 4:
                 unscramble1 = unscramble_word(4)
 
-            if round < 4:
+            if round < 5:
                 round += 1
-            elif round == 4:
+            elif round == 5:
                 game_won = True
             round_over = True
 
-        if keys[pygame.K_RETURN] and word_guessed == True and round_over == True and game_won == False:
+        if keys[pygame.K_RETURN] and word_guessed == True and round_over == True and game_won == False and round < 5:
             word_guessed = False
             round_over = False
             secret_word = pick_secret_word(round)
-            if round == 2:
-                round2_word = secret_word
-            if round == 3:
-                round3_word = secret_word
-            if round == 4:
-                round4_word = secret_word
             secret_word_list = create_secret_word_list(secret_word)
             scrambled_word = scramble_word(secret_word_list)
             print(secret_word_list)
+
+            if round == 2:
+                round2_word = secret_word_list
+            if round == 3:
+                round3_word = secret_word_list
+            if round == 4:
+                round4_word = secret_word_list
 
             guessed_word = guessed_word[0:len(guessed_word) - len(guessed_word)]
             guessed_word = guessed_word.upper()
             guessed_word_list = create_secret_word_list(guessed_word)
             guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
-
 
 
     screen.blit(bg, (0, 0))
@@ -334,7 +342,13 @@ while run:
             screen.blit(letter_blit, (blit_position, 75))
             blit_position += 50
 
+       # print(round, words_displayed)
+
         if round == 1:
+            words_displayed[0] = True
+
+
+        if round == 1 or words_displayed[0] == True:
             blit_position_y = 285
             blit_position_x = 515
             for letter in round1_word:
@@ -342,25 +356,35 @@ while run:
                 screen.blit(word_blit, (blit_position_x, blit_position_y))
                 blit_position_x += 75
 
-        elif round <= 2:
-            blit_position_y = 375
-            blit_position_x = 463
+        if round == 2:
+            words_displayed[1] = True
+
+
+        elif round == 2 or words_displayed[1] == True:
+            blit_position_y = 385
+            blit_position_x = 478
             for letter in round2_word:
                 word_blit = answer_font.render(letter, True, (0, 0, 0))
                 screen.blit(word_blit, (blit_position_x, blit_position_y))
                 blit_position_x += 75
 
-        elif round <= 3:
-            blit_position_y = 475
-            blit_position_x = 425
+        if round == 3:
+            words_displayed[2] = True
+
+        elif round == 3 or words_displayed[2] == True:
+            blit_position_y = 485
+            blit_position_x = 440
             for letter in round3_word:
                 word_blit = answer_font.render(letter, True, (0, 0, 0))
                 screen.blit(word_blit, (blit_position_x, blit_position_y))
                 blit_position_x += 75
 
-        elif round <= 4:
-            blit_position_y = 575
-            blit_position_x = 388
+        if round == 4:
+            words_displayed[3] = True
+
+        elif round == 4 or words_displayed[3] == True:
+            blit_position_y = 585
+            blit_position_x = 403
             for letter in round4_word:
                 word_blit = answer_font.render(letter, True, (0, 0, 0))
                 screen.blit(word_blit, (blit_position_x, blit_position_y))

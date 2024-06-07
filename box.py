@@ -18,7 +18,7 @@ class Box:
         if self.box_type == 0:
             self.image = pygame.image.load("yellow-block.png")
             self.image_size = self.image.get_size()
-            scale_size = (self.image_size[0] * .01, self.image_size[1] * .01)
+            scale_size = (self.image_size[0] * .001, self.image_size[1] * .001)
             self.image = pygame.transform.scale(self.image, scale_size)
             self.image_size = self.image.get_size()
         else:
