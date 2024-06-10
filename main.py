@@ -59,16 +59,26 @@ if len(guessed_word) == 5:
 if len(guessed_word) == 6:
     message_x -= 15
 
+all_boxes = []
+
 # word 1: 3 letters
 w1l1 = Box(500, 275, 1)
 w1l2 = Box(575, 275, 1)
 w1l3 = Box(650, 275, 1)
+all_boxes.append(w1l1)
+all_boxes.append(w1l2)
+all_boxes.append(w1l3)
+
 
 # word 2: 4 letters
 w2l1 = Box(463, 375, 1)
 w2l2 = Box(538, 375, 1)
 w2l3 = Box(613, 375, 1)
 w2l4 = Box(688, 375, 1)
+all_boxes.append(w2l1)
+all_boxes.append(w2l2)
+all_boxes.append(w2l3)
+all_boxes.append(w2l4)
 
 # word 3: 5 letters
 w3l1 = Box(500, 475, 1)
@@ -76,6 +86,12 @@ w3l2 = Box(575, 475, 1)
 w3l3 = Box(650, 475, 1)
 w3l4 = Box(725, 475, 1)
 w3l5 = Box(425, 475, 1)
+all_boxes.append(w3l1)
+all_boxes.append(w3l2)
+all_boxes.append(w3l3)
+all_boxes.append(w3l4)
+all_boxes.append(w3l5)
+
 
 # word 4: 6 letters
 w4l1 = Box(388, 575, 1)
@@ -84,6 +100,13 @@ w4l3 = Box(538, 575, 1)
 w4l4 = Box(613, 575, 1)
 w4l5 = Box(688, 575, 1)
 w4l6 = Box(763, 575, 1)
+all_boxes.append(w4l1)
+all_boxes.append(w4l2)
+all_boxes.append(w4l3)
+all_boxes.append(w4l4)
+all_boxes.append(w4l5)
+all_boxes.append(w4l6)
+
 
 # scrambling word:
 def pick_secret_word(round):
@@ -203,7 +226,7 @@ while run:
             words_done += 1
 
     if guessed_word_checker[1] == True:
-        bird.y = 350
+        bird.y = 315
         bird.move_bird()
         if bird.x == 1200:
             guessed_word_checker[1] = False
@@ -211,24 +234,23 @@ while run:
 
 
     if guessed_word_checker[2] == True:
-        bird.y = 450
+        bird.y = 415
         bird.move_bird()
         if bird.x == 1200:
             guessed_word_checker[2] = False
             words_done += 1
 
     if guessed_word_checker[3] == True:
-        bird.y = 550
+        bird.y = 515
         bird.move_bird()
         if bird.x == 1200:
             guessed_word_checker[3] = False
             words_done += 1
 
 
-    if bird.rect.colliderect(w1l1.rect):
-        touched = True
-        print(touched)
-
+    for box in all_boxes:
+        if bird.rect.colliderect(box.rect):
+            box.uncover_box()
 
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
@@ -280,13 +302,13 @@ while run:
         if keys[pygame.K_RETURN] and word_guessed == True:
             bird.move_bird()
             if round == 1:
-                unscramble1 = unscramble_word(1)
+                guessed_word_checker[round - 1] = True
             if round == 2:
-                unscramble1 = unscramble_word(2)
+                guessed_word_checker[round - 1] = True
             if round == 3:
-                unscramble1 = unscramble_word(3)
+                guessed_word_checker[round - 1] = True
             if round == 4:
-                unscramble1 = unscramble_word(4)
+                guessed_word_checker[round - 1] = True
 
             if round < 5:
                 round += 1
