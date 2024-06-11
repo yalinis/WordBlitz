@@ -6,6 +6,11 @@ import time
 
 pygame.init()
 pygame.font.init()
+pygame.mixer.init()
+
+incorrect_sound = pygame.mixer.Sound("mixkit-apartment-buzzer-bell-press-932.wav")
+correct_sound = pygame.mixer.Sound("mixkit-correct-answer-tone-2870.wav")
+
 my_font = pygame.font.SysFont('Verdana', 20)
 answer_font = pygame.font.SysFont('Comic Sans', 35)
 time_font = pygame.font.SysFont('Comic Sans', 35)
@@ -294,6 +299,9 @@ while run:
             checking = check_word(secret_word_list, guessed_word_list)
             if checking:
                 word_guessed = True
+                correct_sound.play()
+            else:
+                incorrect_sound.play()
 
 
         if keys[pygame.K_RETURN] and word_guessed == True:
@@ -450,4 +458,5 @@ while run:
     pygame.display.update()
 
 # Once we have exited the main program loop we can stop the game engine:
+pygame.mixer.quit()
 pygame.quit()
