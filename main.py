@@ -2,16 +2,17 @@ import pygame
 from box import Box
 from bird import Bird
 import random
+import time
 
 pygame.init()
 pygame.font.init()
 my_font = pygame.font.SysFont('Verdana', 20)
 answer_font = pygame.font.SysFont('Comic Sans', 35)
+time_font = pygame.font.SysFont('Comic Sans', 35)
 won_font = pygame.font.SysFont('Comic Sans', 50)
 save_message = my_font.render("Click to type: ", True, (0, 0, 0))
-game_over_message = won_font.render("Game Over", True, (0, 0, 0))
-won_message2 = won_font.render("You won!!", True, (0, 0, 0))
 my_font_big = pygame.font.SysFont('Verdana', 30)
+
 
 # set up variables for the display
 width = 1200
@@ -20,6 +21,9 @@ size = (width, length)
 screen = pygame.display.set_mode(size)
 
 bg = pygame.image.load("background.png")
+instructions_bg = pygame.image.load("instructions.png")
+won_bg = pygame.image.load("won_bg.png")
+lost_bg = pygame.image.load("lost_bg.png")
 bird_start_y = 200
 bird_start_x = 100
 bird = Bird(bird_start_x, bird_start_y)
@@ -31,12 +35,19 @@ guess_box_active = False
 
 message_x = (width/2)
 
+# time
+current_time = time.time()
+start_time = time.time()
+updated_time = round(10 - (current_time - start_time), 2)
+time_elapsed = str(updated_time)
+display_time = time_font.render(time_elapsed, True, (0, 0, 0))
+
 # user guess
 guessed_word = ""
 guessed_word = guessed_word.upper()
 guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
 
-round = 1
+round_on = 1
 word_guessed = False
 guessed_word_checker = [ False, False, False, False ]
 words_displayed = [ False, False, False, False]
@@ -45,6 +56,7 @@ game_won = False
 game_over = False
 touched = False
 words_done = 0
+game_start = True
 
 if len(guessed_word) == 1:
     message_x = (width / 2)
@@ -109,7 +121,7 @@ all_boxes.append(w4l6)
 
 
 # scrambling word:
-def pick_secret_word(round):
+def pick_secret_word(round_on):
     let_3 = []
     let_4 = []
     let_5 = []
@@ -125,16 +137,16 @@ def pick_secret_word(round):
             let_5.append(w)
         if len(w) == 6:
             let_6.append(w)
-    if round == 1:
+    if round_on == 1:
         r = random.randint(0, len(let_3) - 1)
         random_word = let_3[r]
-    if round == 2:
+    if round_on == 2:
         r = random.randint(0, len(let_4) - 1)
         random_word = let_4[r]
-    if round == 3:
+    if round_on == 3:
         r = random.randint(0, len(let_5) - 1)
         random_word = let_5[r]
-    if round == 4:
+    if round_on == 4:
         r = random.randint(0, len(let_6) - 1)
         random_word = let_6[r]
 
@@ -165,41 +177,9 @@ def check_word(secret_word_list, guessed_word_list):
 
     return True
 
-def unscramble_word(round):
-    if check_word:
-        guessed_word_checker[round - 1] = True
-        if round == 1:
-            # word 1
-            w1l1.uncover_box()
-            w1l2.uncover_box()
-            w1l3.uncover_box()
-
-        if round == 2:
-            # word 2
-            w2l1.uncover_box()
-            w2l2.uncover_box()
-            w2l3.uncover_box()
-            w2l4.uncover_box()
-
-        if round == 3:
-            # word 3
-            w3l1.uncover_box()
-            w3l2.uncover_box()
-            w3l3.uncover_box()
-            w3l4.uncover_box()
-            w3l5.uncover_box()
-
-        if round == 4:
-            # word 4
-            w4l1.uncover_box()
-            w4l2.uncover_box()
-            w4l3.uncover_box()
-            w4l4.uncover_box()
-            w4l5.uncover_box()
-            w4l6.uncover_box()
 
 
-secret_word = pick_secret_word(round)
+secret_word = pick_secret_word(round_on)
 secret_word_list = create_secret_word_list(secret_word)
 scrambled_word = scramble_word(secret_word_list)
 
@@ -214,6 +194,16 @@ clock = pygame.time.Clock()
 frame = 0
 while run:
     # --- Main event loop
+    if game_won == False and game_over == False:
+        current_time = time.time()
+        updated_time = round(45 - (current_time - start_time), 1)
+        time_elapsed = str(updated_time) + "s"
+        if updated_time == 0.0:
+            game_over = True
+            if words_done == 4:
+                game_won = True
+
+    display_time = time_font.render(str(time_elapsed), True, (0, 0, 0))
 
     clock.tick(60)
     if frame % 25 == 0:
@@ -221,7 +211,7 @@ while run:
 
     if guessed_word_checker[0] == True:
         bird.move_bird()
-        if bird.move_bird() == True:
+        if bird.x == 1200:
             guessed_word_checker[0] = False
             words_done += 1
 
@@ -248,6 +238,7 @@ while run:
             words_done += 1
 
 
+
     for box in all_boxes:
         if bird.rect.colliderect(box.rect):
             box.uncover_box()
@@ -255,6 +246,11 @@ while run:
     for event in pygame.event.get():  # User did something
         if event.type == pygame.QUIT:  # If user clicked close
             run = False
+
+
+        if game_start == True and event.type == pygame.MOUSEBUTTONUP:
+            start_time = time.time()
+            game_start = False
 
         if event.type == pygame.KEYUP and guess_box_active:
             # if the user presses backspace, remove the last letter from the text
@@ -271,6 +267,7 @@ while run:
                 guessed_word = guessed_word.upper()
                 guessed_word_list = create_secret_word_list(guessed_word)
                 guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
+
                 if len(guessed_word) == 1:
                     message_x = (width / 2)
                 if len(guessed_word) == 2:
@@ -301,34 +298,34 @@ while run:
 
         if keys[pygame.K_RETURN] and word_guessed == True:
             bird.move_bird()
-            if round == 1:
-                guessed_word_checker[round - 1] = True
-            if round == 2:
-                guessed_word_checker[round - 1] = True
-            if round == 3:
-                guessed_word_checker[round - 1] = True
-            if round == 4:
-                guessed_word_checker[round - 1] = True
+            if round_on == 1:
+                guessed_word_checker[round_on - 1] = True
+            if round_on == 2:
+                guessed_word_checker[round_on - 1] = True
+            if round_on == 3:
+                guessed_word_checker[round_on - 1] = True
+            if round_on == 4:
+                guessed_word_checker[round_on - 1] = True
 
-            if round < 5:
-                round += 1
-            elif round == 5:
+            if round_on < 5:
+                round_on += 1
+            elif round_on == 5:
                 game_won = True
             round_over = True
 
-        if keys[pygame.K_RETURN] and word_guessed == True and round_over == True and game_won == False and round < 5:
+        if keys[pygame.K_RETURN] and word_guessed == True and round_over == True and game_won == False and round_on < 5:
             word_guessed = False
             round_over = False
-            secret_word = pick_secret_word(round)
+            secret_word = pick_secret_word(round_on)
             secret_word_list = create_secret_word_list(secret_word)
             scrambled_word = scramble_word(secret_word_list)
             print(secret_word_list)
 
-            if round == 2:
+            if round_on == 2:
                 round2_word = secret_word_list
-            if round == 3:
+            if round_on == 3:
                 round3_word = secret_word_list
-            if round == 4:
+            if round_on == 4:
                 round4_word = secret_word_list
 
             guessed_word = guessed_word[0:len(guessed_word) - len(guessed_word)]
@@ -337,107 +334,116 @@ while run:
             guessed_word_display = answer_font.render(guessed_word, True, (0, 0, 0))
 
 
+
     screen.blit(bg, (0, 0))
 
-    # won game
-    if words_done == 4:
-        screen.blit(game_over_message, (475, 250))
-        screen.blit(won_message2, (500, 315))
-
+    # instructions:
+    if game_start == True:
+        screen.blit(instructions_bg, (0, 0))
 
     else:
-        # typing
-        screen.blit(save_message, (540, 160))
-        pygame.draw.rect(screen, guess_box_color, guess_box, 3)
-        screen.blit(guessed_word_display, (message_x, 200))
-        screen.blit(bird.image, bird.rect)
-        if round == 1:
-            blit_position = 550
-        if round == 2:
-            blit_position = 530
-        if round == 3:
-            blit_position = 510
-        if round == 4:
-            blit_position = 480
-        for letter in scrambled_word:
-            letter_blit = answer_font.render(letter, True, (0, 0, 0))
-            screen.blit(letter_blit, (blit_position, 75))
-            blit_position += 50
+        # won game
+        if words_done == 4 or (game_over == True and game_won == True):
+            screen.blit(won_bg, (0, 0))
 
-       # print(round, words_displayed)
+        elif game_over == True:
+            screen.blit(lost_bg, (0, 0))
 
-        if round == 1:
-            words_displayed[0] = True
-
-
-        if round == 1 or words_displayed[0] == True:
-            blit_position_y = 285
-            blit_position_x = 515
-            for letter in round1_word:
-                word_blit = answer_font.render(letter, True, (0, 0, 0))
-                screen.blit(word_blit, (blit_position_x, blit_position_y))
-                blit_position_x += 75
-
-        if round == 2:
-            words_displayed[1] = True
+        else:
+            # typing
+            screen.blit(save_message, (540, 160))
+            pygame.draw.rect(screen, guess_box_color, guess_box, 3)
+            screen.blit(guessed_word_display, (message_x, 200))
+            screen.blit(bird.image, bird.rect)
+            if round_on == 1:
+                blit_position = 550
+            if round_on == 2:
+                blit_position = 530
+            if round_on == 3:
+                blit_position = 510
+            if round_on == 4:
+                blit_position = 480
+            for letter in scrambled_word:
+                letter_blit = answer_font.render(letter, True, (0, 0, 0))
+                screen.blit(letter_blit, (blit_position, 75))
+                blit_position += 50
 
 
-        elif round == 2 or words_displayed[1] == True:
-            blit_position_y = 385
-            blit_position_x = 478
-            for letter in round2_word:
-                word_blit = answer_font.render(letter, True, (0, 0, 0))
-                screen.blit(word_blit, (blit_position_x, blit_position_y))
-                blit_position_x += 75
-
-        if round == 3:
-            words_displayed[2] = True
-
-        elif round == 3 or words_displayed[2] == True:
-            blit_position_y = 485
-            blit_position_x = 440
-            for letter in round3_word:
-                word_blit = answer_font.render(letter, True, (0, 0, 0))
-                screen.blit(word_blit, (blit_position_x, blit_position_y))
-                blit_position_x += 75
-
-        if round == 4:
-            words_displayed[3] = True
-
-        elif round == 4 or words_displayed[3] == True:
-            blit_position_y = 585
-            blit_position_x = 403
-            for letter in round4_word:
-                word_blit = answer_font.render(letter, True, (0, 0, 0))
-                screen.blit(word_blit, (blit_position_x, blit_position_y))
-                blit_position_x += 75
+            if round_on == 1:
+                words_displayed[0] = True
 
 
-        # word 1
-        screen.blit(w1l1.image, w1l1.rect)
-        screen.blit(w1l2.image, w1l2.rect)
-        screen.blit(w1l3.image, w1l3.rect)
+            if round_on == 1 or words_displayed[0] == True:
+                blit_position_y = 285
+                blit_position_x = 515
+                for letter in round1_word:
+                    word_blit = answer_font.render(letter, True, (0, 0, 0))
+                    screen.blit(word_blit, (blit_position_x, blit_position_y))
+                    blit_position_x += 75
 
-        # word 2
-        screen.blit(w2l1.image, w2l1.rect)
-        screen.blit(w2l2.image, w2l2.rect)
-        screen.blit(w2l3.image, w2l3.rect)
-        screen.blit(w2l4.image, w2l4.rect)
+            if round_on == 2:
+                words_displayed[1] = True
 
-        # word 3
-        screen.blit(w3l1.image, w3l1.rect)
-        screen.blit(w3l2.image, w3l2.rect)
-        screen.blit(w3l3.image, w3l3.rect)
-        screen.blit(w3l4.image, w3l4.rect)
-        screen.blit(w3l5.image, w3l5.rect)
 
-        # word 4
-        screen.blit(w4l1.image, w4l1.rect)
-        screen.blit(w4l2.image, w4l2.rect)
-        screen.blit(w4l3.image, w4l3.rect)
-        screen.blit(w4l4.image, w4l4.rect)
-        screen.blit(w4l5.image, w4l5.rect)
-        screen.blit(w4l6.image, w4l6.rect)
+            elif round_on == 2 or words_displayed[1] == True:
+                blit_position_y = 385
+                blit_position_x = 478
+                for letter in round2_word:
+                    word_blit = answer_font.render(letter, True, (0, 0, 0))
+                    screen.blit(word_blit, (blit_position_x, blit_position_y))
+                    blit_position_x += 75
+
+            if round_on == 3:
+                words_displayed[2] = True
+
+            elif round_on == 3 or words_displayed[2] == True:
+                blit_position_y = 485
+                blit_position_x = 440
+                for letter in round3_word:
+                    word_blit = answer_font.render(letter, True, (0, 0, 0))
+                    screen.blit(word_blit, (blit_position_x, blit_position_y))
+                    blit_position_x += 75
+
+            if round_on == 4:
+                words_displayed[3] = True
+
+            elif round_on == 4 or words_displayed[3] == True:
+                blit_position_y = 585
+                blit_position_x = 403
+                for letter in round4_word:
+                    word_blit = answer_font.render(letter, True, (0, 0, 0))
+                    screen.blit(word_blit, (blit_position_x, blit_position_y))
+                    blit_position_x += 75
+
+
+            # word 1
+            screen.blit(w1l1.image, w1l1.rect)
+            screen.blit(w1l2.image, w1l2.rect)
+            screen.blit(w1l3.image, w1l3.rect)
+
+            # word 2
+            screen.blit(w2l1.image, w2l1.rect)
+            screen.blit(w2l2.image, w2l2.rect)
+            screen.blit(w2l3.image, w2l3.rect)
+            screen.blit(w2l4.image, w2l4.rect)
+
+            # word 3
+            screen.blit(w3l1.image, w3l1.rect)
+            screen.blit(w3l2.image, w3l2.rect)
+            screen.blit(w3l3.image, w3l3.rect)
+            screen.blit(w3l4.image, w3l4.rect)
+            screen.blit(w3l5.image, w3l5.rect)
+
+            # word 4
+            screen.blit(w4l1.image, w4l1.rect)
+            screen.blit(w4l2.image, w4l2.rect)
+            screen.blit(w4l3.image, w4l3.rect)
+            screen.blit(w4l4.image, w4l4.rect)
+            screen.blit(w4l5.image, w4l5.rect)
+            screen.blit(w4l6.image, w4l6.rect)
+
+            screen.blit(display_time, (1100, 0))
+
 
     frame += 1
 
